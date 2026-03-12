@@ -31,7 +31,7 @@ export default function Navbar() {
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-crypto-primary to-crypto-secondary flex items-center justify-center p-[2px]">
+          <div className="w-10 h-10 rounded-xl  flex items-center justify-center ">
             <div className="w-full h-full bg-crypto-dark rounded-xl flex items-center justify-center group-hover:bg-transparent transition-colors duration-300">
               <Wallet className="w-5 h-5 text-white" />
             </div>

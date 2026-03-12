@@ -2,14 +2,13 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store/utils/thunk";
 import { login } from "../../store/features/authSlice";
 
 export default function Login() {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading } = useSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({

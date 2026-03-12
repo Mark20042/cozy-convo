@@ -1,9 +1,18 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Mail, Lock, User, Eye, EyeOff, Loader2, AlertTriangle, Lightbulb, ShieldAlert } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../store";
+import {
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  Loader2,
+  AlertTriangle,
+  Lightbulb,
+  ShieldAlert,
+} from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../../store/utils/thunk";
 import { register } from "../../store/features/authSlice";
 
 interface PasswordFeedback {
@@ -16,10 +25,11 @@ interface PasswordFeedback {
 
 export default function Register() {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading } = useSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordFeedback, setPasswordFeedback] = useState<PasswordFeedback | null>(null);
+  const [passwordFeedback, setPasswordFeedback] =
+    useState<PasswordFeedback | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,7 +47,12 @@ export default function Register() {
   };
 
   const validateForm = () => {
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       toast.error("All fields are required");
       return false;
     }
@@ -80,7 +95,13 @@ export default function Register() {
     setPasswordFeedback(null);
 
     try {
-      await dispatch(register({ name: formData.name, email: formData.email, password: formData.password })).unwrap();
+      await dispatch(
+        register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      ).unwrap();
       toast.success("Registration successful! Please login.");
       setTimeout(() => navigate("/auth/login"), 1500);
     } catch (err: any) {
@@ -88,7 +109,11 @@ export default function Register() {
       if (err && typeof err === "object" && "is_strong" in err) {
         setPasswordFeedback(err as PasswordFeedback);
       } else {
-        toast.error(typeof err === "string" ? err : "Failed to register. Please try again.");
+        toast.error(
+          typeof err === "string"
+            ? err
+            : "Failed to register. Please try again.",
+        );
       }
     }
   };
@@ -96,14 +121,20 @@ export default function Register() {
   return (
     <div>
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Create an account</h2>
-        <p className="text-slate-400 text-sm">Join the most secure crypto management platform</p>
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Create an account
+        </h2>
+        <p className="text-slate-400 text-sm">
+          Join the most secure crypto management platform
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name Field */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1.5">
+            Full Name
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <User className="h-5 w-5 text-slate-500" />
@@ -121,7 +152,9 @@ export default function Register() {
 
         {/* Email Field */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Email Address</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1.5">
+            Email Address
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Mail className="h-5 w-5 text-slate-500" />
@@ -139,7 +172,9 @@ export default function Register() {
 
         {/* Password Field */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1.5">
+            Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock className="h-5 w-5 text-slate-500" />
@@ -157,14 +192,20 @@ export default function Register() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
             >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Confirm Password Field */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">Confirm Password</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1.5">
+            Confirm Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock className="h-5 w-5 text-slate-500" />
@@ -188,18 +229,23 @@ export default function Register() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="w-4 h-4 text-red-400" />
-                  <span className="text-sm font-medium text-red-400">{passwordFeedback.message}</span>
+                  <span className="text-sm font-medium text-red-400">
+                    {passwordFeedback.message}
+                  </span>
                 </div>
-                <span className="text-xs text-slate-400">{getScoreLabel(passwordFeedback.score)}</span>
+                <span className="text-xs text-slate-400">
+                  {getScoreLabel(passwordFeedback.score)}
+                </span>
               </div>
               <div className="flex gap-1">
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i <= passwordFeedback.score
+                    className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                      i <= passwordFeedback.score
                         ? getScoreColor(passwordFeedback.score)
                         : "bg-white/10"
-                      }`}
+                    }`}
                   />
                 ))}
               </div>
@@ -209,26 +255,34 @@ export default function Register() {
             {passwordFeedback.warning && (
               <div className="flex items-start gap-2.5 bg-amber-500/10 rounded-lg px-3 py-2.5">
                 <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
-                <p className="text-sm text-amber-300">{passwordFeedback.warning}</p>
+                <p className="text-sm text-amber-300">
+                  {passwordFeedback.warning}
+                </p>
               </div>
             )}
 
             {/* Suggestions */}
-            {passwordFeedback.suggestions && passwordFeedback.suggestions.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-blue-400" />
-                  <span className="text-xs font-medium text-blue-400 uppercase tracking-wider">Suggestions</span>
+            {passwordFeedback.suggestions &&
+              passwordFeedback.suggestions.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4 text-blue-400" />
+                    <span className="text-xs font-medium text-blue-400 uppercase tracking-wider">
+                      Suggestions
+                    </span>
+                  </div>
+                  <ul className="space-y-1.5 pl-6">
+                    {passwordFeedback.suggestions.map((suggestion, i) => (
+                      <li
+                        key={i}
+                        className="text-sm text-slate-300 list-disc marker:text-blue-400/60"
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-1.5 pl-6">
-                  {passwordFeedback.suggestions.map((suggestion, i) => (
-                    <li key={i} className="text-sm text-slate-300 list-disc marker:text-blue-400/60">
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              )}
           </div>
         )}
 
@@ -250,7 +304,10 @@ export default function Register() {
 
       <p className="mt-6 text-center text-sm text-slate-400">
         Already have an account?{" "}
-        <Link to="/auth/login" className="text-crypto-primary hover:text-blue-400 font-medium transition-colors">
+        <Link
+          to="/auth/login"
+          className="text-crypto-primary hover:text-blue-400 font-medium transition-colors"
+        >
           Sign in
         </Link>
       </p>
