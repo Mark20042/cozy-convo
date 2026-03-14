@@ -1,0 +1,73 @@
+from fastapi import HTTPException, status, Response
+from models.users import User, UserCreate, UserLogin
+from utils.passwords import hash_password, verify_password, check_password_strength
+from utils.generateToken import create_access_token
+
+async def register_user(user_data: UserCreate):
+    existing_user = await User.find_one(User.email == user_data.email)
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists"
+        )
+        
+    password_strength = check_password_strength(user_data.password)
+    
+    if not password_strength["is_strong"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=password_strength
+        )
+        
+    hashed_pw = hash_password(user_data.password)
+    
+    new_user = User(
+        name=user_data.name,
+        email=user_data.email,
+        password=hashed_pw  
+    )
+    
+    await new_user.insert()
+    
+    return {"message": "User registered successfully!"}
+
+
+async def login_user(credentials: UserLogin, response: Response):
+    user = await User.find_one(User.email == credentials.email)
+    
+    if not user or not verify_password(credentials.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+    
+    token_payload = {
+        "sub": str(user.id), 
+        "email": user.email
+    }
+    
+    access_token = create_access_token(data=token_payload)
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,  
+        secure=False,   
+        samesite="lax",
+        max_age=1800   
+    )
+
+    return {
+        "message": "Successfully logged in!",
+        "user": {
+            "id": str(user.id),
+            "name": user.name,
+            "email": user.email
+        }
+    }
+
+
+async def logout_user(response: Response):
+    response.delete_cookie(key="access_token")
+    return {"message": "Successfully logged out!"}
